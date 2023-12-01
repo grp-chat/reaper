@@ -56,8 +56,10 @@ class GridSystem {
         }
 
         //this.extraArr = ["TCR", "LOK", "LK", "JHA", "JV", "JL", "SZF", "H", "TJY", "KX"];
-        this.extraArr = ["TCR", "JX", "JZ", "TWN", "LJY", "LSH", "ELI", "CUR", "RYD", "CT"];
+        // this.extraArr = ["TCR", "JX", "JZ", "TWN", "LJY", "LSH", "ELI", "CUR", "RYD", "CT"];
         //this.extraArr = ["TCR", "LOK", "KSY", "KN", "JT", "CJH", "CED", "KX", "TJY", "LSH"];
+        this.extraArr = ["TCR", "CKH", "JUN", "JOE", "CJ", "JON", "LL", "EX1", "EX2", "EX3", "EX4"];
+
 
         //this.p1 = { x: 1, y: 1, lable: 2, id: this.extraArr[0], steps: this.startingSteps, area: "mainArea", wallet: 0, total: 0, storeSteps: 1000 };
         // this.playersArr = [this.p1, this.p2, this.p3, this.p4, this.p5, this.p6, this.p7, this.p8, this.p9, this.p10];
@@ -294,6 +296,25 @@ io.sockets.on('connection', function (sock) {
 
         gridSystem.emitToUsers('sendMatrix');
         
+    });
+
+    sock.on('addSteps', (data) => {
+        
+        gridSystem.playersArr.forEach((player) => {
+            if (player.id === data.studentId) {
+                var convertToNum = Number(data.getNum)
+                if (player.steps + convertToNum > 1000) {
+                    var message = player.id + " steps capacity exceeded! Failed."
+                    io.emit('chat-to-clients', message);
+                } else {
+                    var message2 = player.id + " added " + convertToNum + " steps succesful!"
+                    player.steps += convertToNum;
+                    io.emit('chat-to-clients', message2);
+                }
+
+                gridSystem.emitToUsers('sendMatrix');
+            }
+        });
     });
 
     sock.on('addStepsAll', (data) => {
